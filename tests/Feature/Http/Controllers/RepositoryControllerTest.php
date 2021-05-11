@@ -24,6 +24,33 @@ class RepositoryControllerTest extends TestCase
 
     }
 
+    public function test_index_empty()
+    {
+        Repository::factory()->create();
+        $user = User::factory()->create();
+
+        $this
+            ->actingAs($user)
+            ->get('repositories')
+            ->assertStatus(200)
+            ->assertSee('No hay repositorios creados');
+
+    }
+
+    public function test_index_with_data()
+    {
+        $user = User::factory()->create();
+        $repository = Repository::factory()->create(['user_id' => $user->id]);
+
+        $this
+            ->actingAs($user)
+            ->get('repositories')
+            ->assertStatus(200)
+            ->assertSee($repository->id)
+            ->assertSee($repository->url);
+
+    }
+
     public function test_store()
     {
         $data = [
