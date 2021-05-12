@@ -4,25 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\Repository;
 use App\Http\Requests\RepositoryRequest;
-use Illuminate\Http\Request;
 
 class RepositoryController extends Controller
 {
 
-    public function index(Request $request)
+    public function index()
     {
         return view('repositories.index', [
-            'repositories' => $request->user()->repositories
+            'repositories' => auth()->user()->repositories
         ]);
     }
 
-    public function show(Request $request, Repository $repository)
+    public function show( Repository $repository)
     {
-
-        if ($request->user()->id != $repository->user_id) {
-            abort(403);
-        }
-
+        $this->authorize('pass', $repository);
         return view('repositories.show', compact('repository'));
     } 
 
@@ -38,40 +33,24 @@ class RepositoryController extends Controller
         return redirect()->route('repositories.index');
     }
 
-    public function edit(Request $request, Repository $repository)
+    public function edit(Repository $repository)
     {
-
-        if ($request->user()->id != $repository->user_id) {
-            abort(403);
-        }
-
+        $this->authorize('pass', $repository);
         return view('repositories.edit', compact('repository'));
     }
 
     public function update(RepositoryRequest $request, Repository $repository)
     {
-
-        if ($request->user()->id != $repository->user_id) {
-            abort(403);
-        }
-        
+        $this->authorize('pass', $repository);
         $repository->update($request->all());
-
-        // dd();
 
         return redirect()->route('repositories.edit', $repository);
     }    
 
-    public function destroy(Request $request, Repository $repository)
+    public function destroy(Repository $repository)
     {
-
-        if ($request->user()->id != $repository->user_id) {
-            abort(403);
-        }
-
+        $this->authorize('pass', $repository);
         $repository->delete();
-
-        // dd();
 
         return redirect()->route('repositories.index');
     }        
